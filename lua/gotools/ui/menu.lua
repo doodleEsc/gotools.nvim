@@ -4,6 +4,20 @@ local event = require("nui.utils.autocmd").event
 
 local M = {}
 
+M.OPTS = {
+    ui = {
+        relative = "editor",
+        position = "50%",
+        border = {
+            padding = { 0, 1 },
+            text = {
+                top = " Choose-an-Item ",
+                top_align = "center",
+            },
+        },
+    }
+}
+
 local function on_submit_factory(spec)
     return function(item)
         local index = item:get_id()
@@ -24,11 +38,13 @@ local function lines_factory(spec)
     return lines
 end
 
-local function adjust_size(spec, opts)
+local function adjust_opts(spec, opts)
     if type(spec) ~= "table" then
         vim.notify("unsupported menu item, table needed", vim.log.levels.ERROR)
         return
     end
+
+    M.OPTS = vim.tbl_deep_extend("force", M.OPTS, opts)
 
     local max_height = #spec * 2
     local max_width = 0
@@ -39,17 +55,17 @@ local function adjust_size(spec, opts)
     end
 
     max_width = max_width * 2
-    opts.size = {
+    M.OPTS.ui.size = {
         width = max_width,
         height = max_height
     }
 
 end
 
-M.menu_show = function(spec, opts, keymap)
-    adjust_size(spec, opts)
-    local menu = Menu(opts, {
-        keymap = keymap,
+M.show = function(spec, opts)
+    adjust_opts(spec, opts)
+    local menu = Menu(M.OPTS.ui, {
+        keymap = M.OPTS.keymap,
         lines = lines_factory(spec),
         on_submit = on_submit_factory(spec),
     })

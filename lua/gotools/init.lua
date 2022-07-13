@@ -10,13 +10,13 @@ end
 
 local DEFAULT = {
     ui = {
-        position = "50%",
+        -- position = "50%",
         border = {
             style = "single",
-            text = {
-                top = "[Choose-an-Element]",
-                top_align = "center",
-            },
+            -- text = {
+            --     top = "[Choose-an-Element]",
+            --     top_align = "center",
+            -- },
         },
         win_options = {
             winhighlight = "Normal:Normal,FloatBorder:Normal",

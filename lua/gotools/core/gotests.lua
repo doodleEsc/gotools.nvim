@@ -7,7 +7,7 @@ local ts_utils = require "gotools.utils.ts"
 local utils = require("gotools.utils")
 local Job = require("plenary.job")
 local options = require("gotools").options
-local ui = require("gotools.core.ui")
+local menu = require("gotools.ui.menu")
 
 local run = function(args, extra)
     Job:new({
@@ -119,12 +119,12 @@ end
 
 M.generate_test = function()
     local spec = {
-        {"Generate func/method test", M.fun_test},
-        {"Generate exported test", M.exported_test},
-        {"Generate all test", M.all_test},
+        { "Generate func/method test", M.fun_test },
+        { "Generate exported test", M.exported_test },
+        { "Generate all test", M.all_test },
     }
 
-    ui.menu_show(spec, options.ui, options.keymap)
+    menu.show(spec, options)
 end
 
 M.actions = {
