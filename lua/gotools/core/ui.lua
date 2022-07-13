@@ -1,10 +1,10 @@
 local Menu = require("nui.menu")
+local NuiText = require("nui.text")
 local event = require("nui.utils.autocmd").event
 
 local M = {}
 
 local function on_submit_factory(spec)
-
     return function(item)
         local index = item:get_id()
         local cb = spec[index][2]
@@ -19,7 +19,7 @@ local function lines_factory(spec)
     local lines = {}
     for i, item in ipairs(spec) do
         local text = string.format("%d: %s", i, item[1])
-        table.insert(lines, Menu.item(text))
+        table.insert(lines, Menu.item(NuiText(text)))
     end
     return lines
 end
@@ -47,12 +47,11 @@ local function adjust_size(spec, opts)
 end
 
 M.show = function(spec, opts, keymap)
-
     adjust_size(spec, opts)
     local menu = Menu(opts, {
-        lines = lines_factory(spec),
         keymap = keymap,
-        on_submit = on_submit_factory(spec)
+        lines = lines_factory(spec),
+        on_submit = on_submit_factory(spec),
     })
     menu:mount()
     menu:on(
