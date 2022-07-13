@@ -9,11 +9,32 @@ local function concat_bin_path(dir, bin)
 end
 
 local DEFAULT = {
-    gotests = {
-        bin = concat_bin_path(path, "gotests"),
-        test_template = nil,
-        test_template_dir = nil,
-        verbose = true,
+    ui = {
+        position = "50%",
+        border = {
+            style = "single",
+            text = {
+                top = "[Choose-an-Element]",
+                top_align = "center",
+            },
+        },
+        win_options = {
+            winhighlight = "Normal:Normal,FloatBorder:Normal",
+        },
+    },
+    keymap = {
+        focus_next = { "j", "<Down>" },
+        focus_prev = { "k", "<Up>" },
+        close = { "<Esc>", "<C-c>", "q" },
+        submit = { "<CR>" },
+    },
+    tools = {
+        gotests = {
+            bin = concat_bin_path(path, "gotests"),
+            test_template = nil,
+            test_template_dir = nil,
+            verbose = true,
+        }
     }
 }
 

@@ -44,7 +44,8 @@ function M.get_func_method_node_at_pos(row, col, bufnr)
   local bufn = bufnr or vim.api.nvim_get_current_buf()
   local ns = nodes.nodes_at_cursor(query, get_name_defaults(), bufn, row, col)
   if ns == nil then
-    vim.notify("function not found", vim.log.levels.WARN)
+    -- vim.notify("function not found", vim.log.levels.WARN)
+    return nil
   else
     return ns[#ns]
   end
