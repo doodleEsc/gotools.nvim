@@ -46,7 +46,7 @@ local function adjust_size(spec, opts)
 
 end
 
-M.show = function(spec, opts, keymap)
+M.menu_show = function(spec, opts, keymap)
     adjust_size(spec, opts)
     local menu = Menu(opts, {
         keymap = keymap,

@@ -124,7 +124,7 @@ M.generate_test = function()
         {"Generate all test", M.all_test},
     }
 
-    ui.show(spec, options.ui, options.keymap)
+    ui.menu_show(spec, options.ui, options.keymap)
 end
 
 M.actions = {
