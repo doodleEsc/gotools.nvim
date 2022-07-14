@@ -16,7 +16,7 @@ M.OPTS = {
         border = {
             padding = { 0, 1 },
             text = {
-                top = " Tag Type ",
+                top = "Tag Type",
                 top_align = "left",
             },
         },
@@ -35,7 +35,7 @@ end
 M.show = function(spec, opts)
     adjust_opts(spec, opts)
     local input = Input(M.OPTS.ui, {
-        prompt = "> ",
+        prompt = " ",
         on_submit = function(value)
             print("Value submitted: ", value)
         end,

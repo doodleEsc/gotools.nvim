@@ -15,9 +15,8 @@ return h.make_builtin({
     generator = {
         fn = function(params)
             local gotests = require("gotools.core.gotests")
-
             local actions = {}
-            for k, v in pairs(gotests.actions) do
+            for k, v in pairs(gotests.generate_actions(params)) do
                 table.insert(actions, {
                     title = k,
                     action = v

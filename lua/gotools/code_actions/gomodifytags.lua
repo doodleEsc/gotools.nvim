@@ -13,8 +13,8 @@ return h.make_builtin({
     filetypes = { "go" },
     generator = {
         fn = function(params)
-            local gomodifytags = require("gotools.core.gomodifytags")
 
+            local gomodifytags = require("gotools.core.gomodifytags")
             local actions = {}
             for k, v in pairs(gomodifytags.actions) do
                 table.insert(actions, {

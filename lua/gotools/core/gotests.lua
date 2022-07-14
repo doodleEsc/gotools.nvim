@@ -117,18 +117,34 @@ M.exported_test = function(parallel)
     add_test(args, extra)
 end
 
-M.generate_test = function()
-    local spec = {
-        { "Generate func/method test", M.fun_test },
-        { "Generate exported test", M.exported_test },
-        { "Generate all test", M.all_test },
-    }
+local spec_factory = function(params)
 
-    menu.show(spec, options)
+    local generate_func_test = true
+    local ns = ts_utils.get_func_method_node_at_pos(params.row, params.col)
+    if ns == nil or ns.name == nil then
+        generate_func_test = false
+    end
+
+    return function()
+        local spec = {
+            { "Generate exported test", M.exported_test },
+            { "Generate all test", M.all_test },
+        }
+
+        if generate_func_test then
+            table.insert(spec, { "Generate func/method test", M.fun_test })
+        end
+
+        menu.show(spec, options)
+    end
 end
 
-M.actions = {
-    ["Generate test"] = M.generate_test,
-}
+M.generate_actions = function(params)
+    local actions = {
+        ["Generate test"] = spec_factory(params)
+    }
+
+    return actions
+end
 
 return M

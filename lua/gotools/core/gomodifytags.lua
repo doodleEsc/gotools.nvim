@@ -4,20 +4,26 @@ local ts_utils = require "gotools.utils.ts"
 local options = require("gotools").options
 local input = require("gotools.ui.input")
 
-M.add_input = function()
-    input.show(nil, options)
+M.manage_tag = function()
+    local spec = {
+        { "Add Tag", M.add },
+        { "Remove Tag", M.remove }
+    }
+
+    input.show(spec, options)
 end
 
 M.add = function(...)
     print(...)
 end
 
-M.remove = function()
+M.remove = function(...)
+    print(...)
 end
 
 M.actions = {
-    ["Add tags"] = M.add_input,
-    ["Remove tags"] = M.remove,
+    ["Add Tag"] = M.add,
+    ["Remove Tag"] = M.remove,
 }
 
 return M
