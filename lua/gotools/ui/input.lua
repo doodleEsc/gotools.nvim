@@ -23,21 +23,24 @@ M.OPTS = {
     }
 }
 
-local function adjust_opts(spec, opts)
-    if type(spec) ~= "table" then
-        vim.notify("unsupported input, table needed", vim.log.levels.ERROR)
+local function adjust_opts(callback, opts)
+    if type(callback) ~= "function" then
+        vim.notify("unsupported input, function needed", vim.log.levels.ERROR)
         return
     end
 
     M.OPTS = vim.tbl_deep_extend("force", M.OPTS, opts)
 end
 
-M.show = function(spec, opts)
-    adjust_opts(spec, opts)
+M.show = function(callback, opts)
+    adjust_opts(callback, opts)
     local input = Input(M.OPTS.ui, {
         prompt = " ",
         on_submit = function(value)
-            print("Value submitted: ", value)
+            local ok, _ = pcall(callback, value)
+            if not ok then
+                vim.notify("Failed to run function", vim.log.levels.ERROR)
+            end
         end,
     })
     input:map("n", "<Esc>", input.input_props.on_close, { noremap = true })

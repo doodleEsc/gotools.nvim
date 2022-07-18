@@ -16,7 +16,7 @@ return h.make_builtin({
 
             local gomodifytags = require("gotools.core.gomodifytags")
             local actions = {}
-            for k, v in pairs(gomodifytags.actions) do
+            for k, v in pairs(gomodifytags.generate_actions(params)) do
                 table.insert(actions, {
                     title = k,
                     action = v
