@@ -2,12 +2,12 @@
 -- https://github.com/cweill/gotests
 
 local M = {}
-local gotests = "gotests"
 local ts_utils = require "gotools.utils.ts"
 local utils = require("gotools.utils")
 local Job = require("plenary.job")
 local options = require("gotools").options
 local menu = require("gotools.ui.menu")
+local gotests = options.tools.gotests.bin or "gotests"
 
 local run = function(args, extra)
     Job:new({

@@ -4,7 +4,7 @@ local ts_utils = require "gotools.utils.ts"
 local utils = require "gotools.utils"
 local options = require("gotools").options
 local input = require("gotools.ui.input")
-local gomodifytags = "gomodifytags"
+local gomodifytags = options.tools.gomodifytags.bin or "gomodifytags"
 
 local function modify(...)
     local fpath = vim.fn.expand "%"

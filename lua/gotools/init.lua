@@ -1,22 +1,9 @@
-local utils = require("gotools.utils")
-local path = require "mason-core.path".bin_prefix()
-
 local M = {}
-
-
-local function concat_bin_path(dir, bin)
-    return dir .. utils.sep() .. bin
-end
 
 local DEFAULT = {
     ui = {
-        -- position = "50%",
         border = {
             style = "single",
-            -- text = {
-            --     top = "[Choose-an-Element]",
-            --     top_align = "center",
-            -- },
         },
         win_options = {
             winhighlight = "Normal:Normal,FloatBorder:Normal",
@@ -30,10 +17,13 @@ local DEFAULT = {
     },
     tools = {
         gotests = {
-            bin = concat_bin_path(path, "gotests"),
+            bin = "gotests",
             test_template = nil,
             test_template_dir = nil,
             verbose = true,
+        },
+        gomodifytags = {
+            bin = "gomodifytags",
         }
     }
 }
