@@ -43,7 +43,8 @@ M.show = function(callback, opts)
             end
         end,
     })
-    input:map("n", "<Esc>", input.input_props.on_close, { noremap = true })
+    input:map("i", "<Esc>", input.input_props.on_close, { noremap = true })
+    input:map("i", "<C-c>", input.input_props.on_close, { noremap = true })
     input:mount()
     input:on(event.BufLeave, function()
         input:unmount()
