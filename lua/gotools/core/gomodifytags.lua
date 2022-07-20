@@ -17,6 +17,7 @@ local function modify(...)
     for _, v in ipairs(arg) do
         table.insert(cmd_args, v)
     end
+    print(vim.inspect(cmd_args))
     local res_data
     Job:new({
         command = gomodifytags,
@@ -94,14 +95,11 @@ M.add = function(...)
 
     table.insert(cmd_args, "-add-tags")
 
-    local arg = { ... }
+    local arg = ...
     if #arg == 0 or arg == "" then
-        arg = { "json" }
+        arg = "json"
     end
-
-    for _, v in ipairs(arg) do
-        table.insert(cmd_args, v)
-    end
+    table.insert(cmd_args, arg)
 
     modify(unpack(cmd_args))
 end
@@ -118,22 +116,19 @@ M.remove = function(...)
     table.insert(cmd_args, struct)
 
     -- check field
-    local ok, field = get_field()
-    if ok then
+    local field_ok, field = get_field()
+    if field_ok then
         table.insert(cmd_args, "-field")
         table.insert(cmd_args, field)
     end
 
     table.insert(cmd_args, "-remove-tags")
 
-    local arg = { ... }
+    local arg = ...
     if #arg == 0 or arg == "" then
-        arg = { "json" }
+        arg = "json"
     end
-
-    for _, v in ipairs(arg) do
-        table.insert(cmd_args, v)
-    end
+    table.insert(cmd_args, arg)
 
     modify(unpack(cmd_args))
 end
