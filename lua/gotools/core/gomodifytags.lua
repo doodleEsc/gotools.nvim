@@ -17,7 +17,6 @@ local function modify(...)
     for _, v in ipairs(arg) do
         table.insert(cmd_args, v)
     end
-    print(vim.inspect(cmd_args))
     local res_data
     Job:new({
         command = gomodifytags,
