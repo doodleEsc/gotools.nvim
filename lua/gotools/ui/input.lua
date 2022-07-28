@@ -35,7 +35,7 @@ end
 M.show = function(callback, opts)
     adjust_opts(callback, opts)
     local input = Input(M.OPTS.ui, {
-        prompt = " ",
+        prompt = "➤ ",
         on_submit = function(value)
             local ok, _ = pcall(callback, value)
             if not ok then

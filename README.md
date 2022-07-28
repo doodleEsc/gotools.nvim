@@ -1,16 +1,13 @@
-# A Neovim Plugin Template
+# gotools
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ellisonleao/nvim-plugin-template/default?style=for-the-badge)
-![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-A template repository for Neovim plugins.
+gotools.nvim provides some code action functions that can be integrated with null-ls or can be used separately
 
-## Using it
+## Install
+* Requires Neovim >= 0.7
+* 
 
-Via `gh`:
-
-```
-$ gh repo create my-plugin -p ellisonleao/nvim-plugin-template
+```lua
 ```
 
 Via github web page:
