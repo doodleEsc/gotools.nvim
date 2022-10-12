@@ -133,11 +133,6 @@ M.exported_test = function(parallel)
     add_test(args, extra)
 end
 
-M.generate = function()
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    generate(row, col)
-end
-
 local generate = function(row, col)
     local spec = {
         ["Generate exported test"] = M.exported_test,
@@ -172,5 +167,12 @@ M.generate_actions = function(params)
 
     return actions
 end
+
+M.generate = function()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    generate(row, col)
+end
+
+
 
 return M
