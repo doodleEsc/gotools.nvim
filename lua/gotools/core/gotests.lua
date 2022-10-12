@@ -6,7 +6,6 @@ local ts_utils = require "gotools.utils.ts"
 local utils = require("gotools.utils")
 local Job = require("plenary.job")
 local options = require("gotools").options
-local menu = require("gotools.ui.menu")
 local gotests = options.tools.gotests.bin or "gotests"
 
 local run = function(args, extra)
@@ -76,6 +75,23 @@ local add_test = function(args, extra)
     run(args, extra)
 end
 
+local show = function(spec)
+    local items = {}
+    for name, _ in pairs(spec) do
+        table.insert(items, name)
+    end
+
+    local on_choice = function(choice)
+        local callback = spec[choice]
+        local ok, _ = pcall(callback)
+        if not ok then
+            vim.notify("Failed to run selected function", vim.log.levels.ERROR)
+        end
+    end
+
+    vim.ui.select(items, { prompt = 'Select An Action' }, on_choice)
+end
+
 M.fun_test = function(parallel)
     local ns = ts_utils.get_func_method_node_at_pos(unpack(vim.api.nvim_win_get_cursor(0)))
     if ns == nil or ns.name == nil then
@@ -117,26 +133,31 @@ M.exported_test = function(parallel)
     add_test(args, extra)
 end
 
-local spec_factory = function(params)
+M.generate = function(row, col)
+    local spec = {
+        ["Generate exported test"] = M.exported_test,
+        ["Generate all test"] = M.all_test,
+    }
 
     local generate_func_test = true
-    local ns = ts_utils.get_func_method_node_at_pos(params.row, params.col)
+    local ns = ts_utils.get_func_method_node_at_pos(row, col)
     if ns == nil or ns.name == nil then
         generate_func_test = false
     end
 
-    return function()
-        local spec = {
-            { "Generate exported test", M.exported_test },
-            { "Generate all test", M.all_test },
-        }
-
-        if generate_func_test then
-            table.insert(spec, { "Generate func/method test", M.fun_test })
-        end
-
-        menu.show(spec, options)
+    if generate_func_test then
+        spec["Generate func/method test"] = M.fun_test
     end
+
+    show(spec)
+end
+
+local spec_factory = function(params)
+    return function()
+        local row, col = params.row, params.col
+        M.generate(row, col)
+    end
+
 end
 
 M.generate_actions = function(params)

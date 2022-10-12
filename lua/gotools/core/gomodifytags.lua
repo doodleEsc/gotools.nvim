@@ -3,8 +3,8 @@ local Job = require "plenary.job"
 local ts_utils = require "gotools.utils.ts"
 local utils = require "gotools.utils"
 local options = require("gotools").options
-local input = require("gotools.ui.input")
 local gomodifytags = options.tools.gomodifytags.bin or "gomodifytags"
+local input_ns_id = vim.api.nvim_create_namespace('')
 
 local function modify(...)
     local fpath = vim.fn.expand "%"
@@ -74,9 +74,16 @@ local function get_field(position)
     return true, ns.name
 end
 
-M.add = function(...)
-    local cmd_args = {}
+local show = function(on_confirm)
+    local opts = { prompt = '➤ ', label = 'Tag' }
+    vim.ui.input(opts, on_confirm)
+end
 
+M.add = function(...)
+    local arg = ...
+    if arg == nil then return end
+
+    local cmd_args = {}
     -- check struct
     local ok, struct = get_struct()
     if not ok then
@@ -94,7 +101,6 @@ M.add = function(...)
 
     table.insert(cmd_args, "-add-tags")
 
-    local arg = ...
     if #arg == 0 or arg == "" then
         arg = "json"
     end
@@ -104,6 +110,9 @@ M.add = function(...)
 end
 
 M.remove = function(...)
+    local arg = ...
+    if arg == nil then return end
+
     local cmd_args = {}
 
     -- check struct
@@ -133,11 +142,11 @@ M.remove = function(...)
 end
 
 M.add_input = function()
-    input.show(M.add, options)
+    show(M.add)
 end
 
 M.remove_input = function()
-    input.show(M.remove, options)
+    show(M.remove)
 end
 
 M.generate_actions = function(params)
