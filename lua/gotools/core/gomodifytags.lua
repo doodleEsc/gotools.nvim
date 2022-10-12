@@ -130,11 +130,11 @@ M.remove = function(...)
         table.insert(cmd_args, field)
     end
 
-    table.insert(cmd_args, "-remove-tags")
-
     local arg = ...
     if #arg == 0 or arg == "" then
-        arg = "json"
+        table.insert(cmd_args, "-clear-tags")
+    else
+        table.insert(cmd_args, "-remove-tags")
     end
     table.insert(cmd_args, arg)
 
