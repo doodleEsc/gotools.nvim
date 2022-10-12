@@ -4,7 +4,6 @@ local ts_utils = require "gotools.utils.ts"
 local utils = require "gotools.utils"
 local options = require("gotools").options
 local gomodifytags = options.tools.gomodifytags.bin or "gomodifytags"
-local input_ns_id = vim.api.nvim_create_namespace('')
 
 local function modify(...)
     local fpath = vim.fn.expand "%"
@@ -142,11 +141,11 @@ M.remove = function(...)
     modify(unpack(cmd_args))
 end
 
-M.add_input = function()
+M.add_tags = function()
     show(M.add)
 end
 
-M.remove_input = function()
+M.remove_tags = function()
     show(M.remove)
 end
 
@@ -158,8 +157,8 @@ M.generate_actions = function(params)
     end
 
     local actions = {
-        ["Add Tag"] = M.add_input,
-        ["Del Tag"] = M.remove_input,
+        ["Add Tag"] = M.add_tags,
+        ["Del Tag"] = M.remove_tags,
     }
 
     return actions

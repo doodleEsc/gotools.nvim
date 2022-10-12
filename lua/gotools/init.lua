@@ -1,26 +1,11 @@
 local M = {}
 
 local DEFAULT = {
-    ui = {
-        border = {
-            style = "single",
-        },
-        win_options = {
-            winhighlight = "Normal:Normal,FloatBorder:Normal",
-        },
-    },
-    keymap = {
-        focus_next = { "j", "<Down>" },
-        focus_prev = { "k", "<Up>" },
-        close = { "<Esc>", "<C-c>", "q" },
-        submit = { "<CR>" },
-    },
     tools = {
         gotests = {
             bin = "gotests",
             test_template = nil,
             test_template_dir = nil,
-            verbose = true,
         },
         gomodifytags = {
             bin = "gomodifytags",
