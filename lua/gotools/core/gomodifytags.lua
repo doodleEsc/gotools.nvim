@@ -52,6 +52,7 @@ local function modify(...)
         false,
         tagged.lines
     )
+    vim.cmd[[write]]
 end
 
 local function get_struct(position)
