@@ -6,6 +6,10 @@ local DEFAULT = {
             bin = "gotests",
             test_template = nil,
             test_template_dir = nil,
+            display = {
+                prompt = 'Select An Action',
+                kind = ''
+            }
         },
         gomodifytags = {
             bin = "gomodifytags",
