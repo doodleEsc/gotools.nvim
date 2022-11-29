@@ -16,7 +16,6 @@ local function modify(...)
     for _, v in ipairs(arg) do
         table.insert(cmd_args, v)
     end
-    local res_data
     Job:new({
         command = gomodifytags,
         args = cmd_args,
@@ -28,50 +27,50 @@ local function modify(...)
                 )
                 return
             end
-            vim.inspect(data:result())
-            res_data = data:result()
+            local res_data = data:result()
+            local tagged = vim.json.decode(table.concat(res_data))
+            if tagged.errors ~= nil
+                or tagged.lines == nil
+                or tagged["start"] == nil
+                or tagged["start"] == 0
+            then
+                vim.notify("failed to set tags " .. vim.inspect(tagged), "error")
+            end
+            for i, v in ipairs(tagged.lines) do
+                tagged.lines[i] = utils.rtrim(v)
+            end
+            vim.schedule(function()
+                vim.api.nvim_buf_set_lines(
+                    0,
+                    tagged.start - 1,
+                    tagged.start - 1 + #tagged.lines,
+                    false,
+                    tagged.lines
+                )
+                vim.cmd [[write]]
+            end)
         end,
-    }):sync()
-
-    local tagged = vim.json.decode(table.concat(res_data))
-    if tagged.errors ~= nil
-        or tagged.lines == nil
-        or tagged["start"] == nil
-        or tagged["start"] == 0
-    then
-        vim.notify("failed to set tags " .. vim.inspect(tagged), "error")
-    end
-    for i, v in ipairs(tagged.lines) do
-        tagged.lines[i] = utils.rtrim(v)
-    end
-    vim.api.nvim_buf_set_lines(
-        0,
-        tagged.start - 1,
-        tagged.start - 1 + #tagged.lines,
-        false,
-        tagged.lines
-    )
-    vim.cmd[[write]]
+    }):start()
 end
 
 local function get_struct(position)
     local pos = position or vim.api.nvim_win_get_cursor(0)
     local ns = ts_utils.get_struct_node_at_pos(unpack(pos))
     if ns == nil or ns == {} then
-        return false, nil
+        return nil
     end
 
-    return true, ns.name
+    return ns.name
 end
 
 local function get_field(position)
     local pos = position or vim.api.nvim_win_get_cursor(0)
     local ns = ts_utils.get_field_node_at_pos(unpack(pos))
     if ns == nil or ns == {} then
-        return false, nil
+        return nil
     end
 
-    return true, ns.name
+    return ns.name
 end
 
 local show = function(on_confirm)
@@ -85,16 +84,16 @@ M.add = function(...)
 
     local cmd_args = {}
     -- check struct
-    local ok, struct = get_struct()
-    if not ok then
+    local struct = get_struct()
+    if struct == nil then
         return
     end
     table.insert(cmd_args, "-struct")
     table.insert(cmd_args, struct)
 
     -- check field
-    local ok, field = get_field()
-    if ok then
+    local field = get_field()
+    if field ~= nil then
         table.insert(cmd_args, "-field")
         table.insert(cmd_args, field)
     end
@@ -116,16 +115,16 @@ M.remove = function(...)
     local cmd_args = {}
 
     -- check struct
-    local ok, struct = get_struct()
-    if not ok then
+    local struct = get_struct()
+    if struct == nil then
         return
     end
     table.insert(cmd_args, "-struct")
     table.insert(cmd_args, struct)
 
     -- check field
-    local field_ok, field = get_field()
-    if field_ok then
+    local field = get_field()
+    if field ~= nil then
         table.insert(cmd_args, "-field")
         table.insert(cmd_args, field)
     end
@@ -151,8 +150,8 @@ end
 
 M.generate_actions = function(params)
     local position = { params.row, params.col }
-    local ok, _ = get_struct(position)
-    if not ok then
+    local struct = get_struct(position)
+    if struct == nil then
         return {}
     end
 

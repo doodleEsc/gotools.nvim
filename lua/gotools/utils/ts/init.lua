@@ -8,6 +8,7 @@ local M = {
         interface = [[((type_declaration (type_spec name:(type_identifier) @interface.name type:(interface_type)))@interface.declaration)]],
         method_name = [[((method_declaration receiver: (parameter_list)@method.receiver name: (field_identifier)@method.name body:(block))@method.declaration)]],
         func = [[((function_declaration name: (identifier)@function.name) @function.declaration)]],
+        module = [[(module_directive (module_path)@module.name)@module.clause]],
     },
 }
 
@@ -89,6 +90,21 @@ end
 ---@return table|nil
 function M.get_interface_node_at_pos(row, col, bufnr)
     local query = M.querys.interface
+    local bufn = bufnr or vim.api.nvim_get_current_buf()
+    local ns = nodes.nodes_at_cursor(query, get_name_defaults(), bufn, row, col)
+    if ns == nil then
+        return nil
+    else
+        return ns[#ns]
+    end
+end
+
+---@param row string
+---@param col string
+---@param bufnr string|nil
+---@return table|nil
+function M.get_module_node_at_pos(row, col, bufnr)
+    local query = M.querys.module
     local bufn = bufnr or vim.api.nvim_get_current_buf()
     local ns = nodes.nodes_at_cursor(query, get_name_defaults(), bufn, row, col)
     if ns == nil then

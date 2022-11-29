@@ -13,6 +13,9 @@ local DEFAULT = {
         },
         gomodifytags = {
             bin = "gomodifytags",
+        },
+        impl = {
+            bin = "impl"
         }
     }
 }

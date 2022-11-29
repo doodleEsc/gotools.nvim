@@ -9,7 +9,7 @@ local options = require("gotools").options
 local gotests = options.tools.gotests.bin or "gotests"
 local display_opts = options.tools.gotests.display
 
-local run = function(args, extra)
+local function run(args, extra)
     Job:new({
         command = gotests,
         args = args,
@@ -93,15 +93,25 @@ local show = function(spec)
     vim.ui.select(items, display_opts, on_choice)
 end
 
-M.fun_test = function(parallel)
-    local ns = ts_utils.get_func_method_node_at_pos(unpack(vim.api.nvim_win_get_cursor(0)))
+local function get_func_method_name(position)
+    local pos = position or vim.api.nvim_win_get_cursor(0)
+    local ns = ts_utils.get_func_method_node_at_pos(unpack(pos))
     if ns == nil or ns.name == nil then
+        return nil
+    end
+
+    return ns.name
+end
+
+M.fun_test = function(parallel)
+    local name = get_func_method_name()
+    if name == nil then
         vim.notify("cursor on func/method and execute the command again", vim.log.levels.WARN)
         return
     end
 
-    local funame = ns.name
-    local funame_regx = "^" .. ns.name .. "$"
+    local funame = name
+    local funame_regx = "^" .. name .. "$"
     local args = new_gotests_args(parallel)
     table.insert(args, "-only")
     table.insert(args, funame_regx)
@@ -141,8 +151,8 @@ local generate = function(row, col)
     }
 
     local generate_func_test = true
-    local ns = ts_utils.get_func_method_node_at_pos(row, col)
-    if ns == nil or ns.name == nil then
+    local name = get_func_method_name()
+    if name == nil then
         generate_func_test = false
     end
 
