@@ -34,7 +34,7 @@ local function run(cmd_args)
                 local lnum = vim.fn.line("$")
                 table.insert(content, 1, "")
                 vim.fn.append(lnum, content)
-                vim.api.nvim_win_set_cursor(0, { lnum, 0 })
+                vim.api.nvim_win_set_cursor(0, { lnum + 1, 0 })
             end)
         end,
     })
