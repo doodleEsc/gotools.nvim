@@ -31,9 +31,10 @@ local function run(cmd_args)
             end
             vim.schedule(function()
                 local content = data:result()
-                local pos = vim.fn.line("$")
+                local lnum = vim.fn.line("$")
                 table.insert(content, 1, "")
-                vim.fn.append(pos, content)
+                vim.fn.append(lnum, content)
+                vim.api.nvim_win_set_cursor(0, { lnum, 0 })
             end)
         end,
     })
