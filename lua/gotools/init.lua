@@ -6,17 +6,21 @@ local DEFAULT = {
             bin = "gotests",
             test_template = nil,
             test_template_dir = nil,
-            display = {
-                prompt = 'Select An Action',
-                kind = ''
-            }
         },
         gomodifytags = {
             bin = "gomodifytags",
         },
         impl = {
-            bin = "impl"
+            bin = "impl",
         }
+    },
+    select_opts = {
+        prompt = 'Select An Action',
+        kind = 'gotools'
+    },
+    input_opts = {
+        prompt = '➤ ',
+        label = 'Input'
     }
 }
 

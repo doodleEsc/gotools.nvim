@@ -4,6 +4,7 @@ local ts_utils = require "gotools.utils.ts"
 local utils = require "gotools.utils"
 local options = require("gotools").options
 local gomodifytags = options.tools.gomodifytags.bin or "gomodifytags"
+local input_opts = options.input_opts
 
 local function modify(...)
     local fpath = vim.fn.expand "%"
@@ -22,7 +23,7 @@ local function modify(...)
         on_exit = function(data, retval)
             if retval ~= 0 then
                 vim.notify(
-                    "command 'gomodifytags " .. unpack(cmd_args) .. "' exited with code " .. retval,
+                    "command 'gomodifytags' exited with code " .. retval,
                     vim.log.levels.ERROR
                 )
                 return
@@ -74,7 +75,8 @@ local function get_field(position)
 end
 
 local show = function(on_confirm)
-    local opts = { prompt = '➤ ', label = 'Tag' }
+    local opts = input_opts
+    opts.label = "Tag"
     vim.ui.input(opts, on_confirm)
 end
 

@@ -11,11 +11,11 @@ local channel = require("plenary.async.control").channel
 local tele_utils = require "telescope.utils"
 local options = require("gotools").options
 local impl = options.tools.impl.bin or "impl"
+local select_opts = options.select_opts
+local input_opts = options.input_opts
 
 
 local M = {}
-
-M.recv_style = ""
 
 local function run(cmd_args)
     local job = Job:new({
@@ -24,7 +24,7 @@ local function run(cmd_args)
         on_exit = function(data, retval)
             if retval ~= 0 then
                 vim.notify(
-                    "command 'impl " .. unpack(cmd_args) .. "' exited with code " .. retval,
+                    "command 'impl' exited with code " .. retval,
                     vim.log.levels.ERROR
                 )
                 return
@@ -84,43 +84,17 @@ local function get_interface_name(entry)
     return pkg .. "." .. entry.symbol_name
 end
 
-local function get_receiver()
+local function get_receiver(recv_type)
     local struct = get_struct()
     if struct == nil then
         return nil
     end
 
-    if #M.recv_style ~= 0 and M.recv_style == "struct" then
+    if recv_type ~= nil and recv_type == "struct" then
         return string.sub(struct, 1, 1) .. " " .. struct
     end
 
-    if #M.recv_style ~= 0 and M.recv_style == "pointer" then
-        return string.sub(struct, 1, 1) .. " " .. "*" .. struct
-    end
-    return nil
-end
-
-local function goimpl(entry)
-    local cmd_args = { "-dir" }
-
-    local dir = vim.fn.fnameescape(vim.fn.expand("%:p:h"))
-    table.insert(cmd_args, dir)
-
-    local recv = get_receiver()
-    if recv == nil then
-        vim.notify("No Struct Founded at Cursor Position")
-        return
-    end
-    table.insert(cmd_args, recv)
-
-    local iface = get_interface_name(entry)
-    if iface == nil then
-        vim.notify("No Interface Founded")
-        return
-    end
-    table.insert(cmd_args, iface)
-
-    run(cmd_args)
+    return string.sub(struct, 1, 1) .. " " .. "*" .. struct
 end
 
 local function get_workspace_symbols_requester(bufnr, opts)
@@ -142,8 +116,46 @@ local function get_workspace_symbols_requester(bufnr, opts)
     end
 end
 
-M.goimpl = function(opts)
-    opts = opts or {}
+local function goimpl(receiver, interface)
+    local cmd_args = { "-dir" }
+    local dir = vim.fn.fnameescape(vim.fn.expand("%:p:h"))
+    table.insert(cmd_args, dir)
+    table.insert(cmd_args, receiver)
+    table.insert(cmd_args, interface)
+    run(cmd_args)
+end
+
+local function action_factory(recv_type)
+    return function()
+        vim.ui.select(
+            { "Input Interface", "Find Interface" },
+            select_opts,
+            function(item)
+                if item == "Input Interface" then
+                    M.impl_input(recv_type)
+                else
+                    M.impl_find(recv_type)
+                end
+            end)
+    end
+end
+
+M.impl_input = function(recv_type)
+    local opts = input_opts
+    opts.label = "Interface"
+    vim.ui.input(opts, function(input)
+
+        local recv = get_receiver(recv_type)
+        if recv == nil then
+            vim.notify("No Struct Founded at Cursor Position")
+            return
+        end
+        goimpl(recv, input)
+    end)
+end
+
+M.impl_find = function(recv_type)
+    local opts = options.tools.impl
     local curr_bufnr = vim.api.nvim_get_current_buf()
     local struct = get_struct()
     if struct == nil then
@@ -166,7 +178,20 @@ M.goimpl = function(opts)
                 if not entry then
                     return
                 end
-                goimpl(entry)
+
+                local recv = get_receiver(recv_type)
+                if recv == nil then
+                    vim.notify("No Struct Founded at Cursor Position")
+                    return
+                end
+
+                local iface = get_interface_name(entry)
+                if iface == nil then
+                    vim.notify("No Interface Founded")
+                    return
+                end
+
+                goimpl(recv, iface)
             end)
             return true
         end,
@@ -181,16 +206,8 @@ M.generate_actions = function(params)
     end
 
     local actions = {
-        ["Impl Interface"] = function()
-            local opts = options.impl
-            M.recv_style = "struct"
-            M.goimpl(opts)
-        end,
-        ["Impl Interface In Pointer"] = function()
-            local opts = options.impl
-            M.recv_style = "pointer"
-            M.goimpl(opts)
-        end,
+        ["Impl Interface"] = action_factory("struct"),
+        ["Impl Interface In Pointer"] = action_factory("pointer"),
     }
 
     return actions

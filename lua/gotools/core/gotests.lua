@@ -7,7 +7,7 @@ local utils = require("gotools.utils")
 local Job = require("plenary.job")
 local options = require("gotools").options
 local gotests = options.tools.gotests.bin or "gotests"
-local display_opts = options.tools.gotests.display
+local select_opts = options.select_opts
 
 local function run(args, extra)
     Job:new({
@@ -90,7 +90,7 @@ local show = function(spec)
         end
     end
 
-    vim.ui.select(items, display_opts, on_choice)
+    vim.ui.select(items, select_opts, on_choice)
 end
 
 local function get_func_method_name(position)
