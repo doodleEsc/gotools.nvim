@@ -88,6 +88,10 @@ end
 M.add_tags = function(...)
     local arg = ...
     if arg == nil then return end
+    if #arg == 0 or arg == "" then
+        vim.notify("No tags to be add")
+        return
+    end
 
     local cmd_args = {}
     -- check struct
@@ -106,20 +110,20 @@ M.add_tags = function(...)
     end
 
     table.insert(cmd_args, "-add-tags")
-
-    if #arg == 0 or arg == "" then
-        arg = "json"
-    end
     table.insert(cmd_args, arg)
-
     modify(unpack(cmd_args))
 end
 
 M.add_options = function(...)
     local arg = ...
     if arg == nil then return end
+    if #arg == 0 or arg == "" then
+        vim.notify("No options to be add")
+        return
+    end
 
     local cmd_args = {}
+
     -- check struct
     local struct = get_struct()
     if struct == nil then
@@ -136,12 +140,6 @@ M.add_options = function(...)
     end
 
     table.insert(cmd_args, "-add-options")
-
-    if #arg == 0 or arg == "" then
-        vim.notify("No options to be add")
-        return
-    end
-
     table.insert(cmd_args, arg)
     modify(unpack(cmd_args))
 end
@@ -166,14 +164,13 @@ M.remove_options = function(...)
         table.insert(cmd_args, field)
     end
 
-    table.insert(cmd_args, "-remove-options")
-
     if #arg == 0 or arg == "" then
-        vim.notify("No options to be remove")
-        return
+        table.insert(cmd_args, "-clear-options")
+    else
+        table.insert(cmd_args, "-remove-options")
+        table.insert(cmd_args, arg)
     end
 
-    table.insert(cmd_args, arg)
     modify(unpack(cmd_args))
 end
 
@@ -198,13 +195,12 @@ M.remove_tags = function(...)
         table.insert(cmd_args, field)
     end
 
-    local arg = ...
     if #arg == 0 or arg == "" then
         table.insert(cmd_args, "-clear-tags")
     else
         table.insert(cmd_args, "-remove-tags")
+        table.insert(cmd_args, arg)
     end
-    table.insert(cmd_args, arg)
 
     modify(unpack(cmd_args))
 end
@@ -218,9 +214,11 @@ M.show_remove_tags = function()
 end
 
 M.show_add_options = function()
+    show(M.add_options)
 end
 
 M.show_remove_options = function()
+    show(M.remove_options)
 end
 
 
@@ -232,7 +230,9 @@ M.generate_actions = function(params)
     --
     local actions = {
         ["Add Tag"] = M.show_add_tags,
-        ["Del Tag"] = M.show_remove_tags,
+        ["Remove Tag"] = M.show_remove_tags,
+        ["Add Option"] = M.show_add_options,
+        ["Remove Option"] = M.show_remove_options,
     }
 
     return actions
