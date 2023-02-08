@@ -9,6 +9,7 @@ local DEFAULT = {
         },
         gomodifytags = {
             bin = "gomodifytags",
+            skip_unexported = true
         },
         impl = {
             bin = "impl",

@@ -5,14 +5,19 @@ local util = require "gotools.util"
 local options = require("gotools").options
 local gomodifytags = options.tools.gomodifytags.bin or "gomodifytags"
 local input_opts = options.input_opts
+local skip_unexported = options.tools.gomodifytags.skip_unexported
 
 local function modify(...)
     local fpath = vim.fn.expand "%"
     local cmd_args = {
         "-format", "json",
         "-file", fpath,
-        "-w"
+        "-w",
     }
+
+    if skip_unexported then
+        table.insert(cmd_args, "-skip-unexported")
+    end
     local arg = { ... }
     for _, v in ipairs(arg) do
         table.insert(cmd_args, v)
@@ -80,7 +85,7 @@ local show = function(on_confirm)
     vim.ui.input(opts, on_confirm)
 end
 
-M.add = function(...)
+M.add_tags = function(...)
     local arg = ...
     if arg == nil then return end
 
@@ -110,7 +115,69 @@ M.add = function(...)
     modify(unpack(cmd_args))
 end
 
-M.remove = function(...)
+M.add_options = function(...)
+    local arg = ...
+    if arg == nil then return end
+
+    local cmd_args = {}
+    -- check struct
+    local struct = get_struct()
+    if struct == nil then
+        return
+    end
+    table.insert(cmd_args, "-struct")
+    table.insert(cmd_args, struct)
+
+    -- check field
+    local field = get_field()
+    if field ~= nil then
+        table.insert(cmd_args, "-field")
+        table.insert(cmd_args, field)
+    end
+
+    table.insert(cmd_args, "-add-options")
+
+    if #arg == 0 or arg == "" then
+        vim.notify("No options to be add")
+        return
+    end
+
+    table.insert(cmd_args, arg)
+    modify(unpack(cmd_args))
+end
+
+M.remove_options = function(...)
+    local arg = ...
+    if arg == nil then return end
+
+    local cmd_args = {}
+    -- check struct
+    local struct = get_struct()
+    if struct == nil then
+        return
+    end
+    table.insert(cmd_args, "-struct")
+    table.insert(cmd_args, struct)
+
+    -- check field
+    local field = get_field()
+    if field ~= nil then
+        table.insert(cmd_args, "-field")
+        table.insert(cmd_args, field)
+    end
+
+    table.insert(cmd_args, "-remove-options")
+
+    if #arg == 0 or arg == "" then
+        vim.notify("No options to be remove")
+        return
+    end
+
+    table.insert(cmd_args, arg)
+    modify(unpack(cmd_args))
+end
+
+M.remove_tags = function(...)
     local arg = ...
     if arg == nil then return end
 
@@ -142,13 +209,20 @@ M.remove = function(...)
     modify(unpack(cmd_args))
 end
 
-M.add_tags = function()
-    show(M.add)
+M.show_add_tags = function()
+    show(M.add_tags)
 end
 
-M.remove_tags = function()
-    show(M.remove)
+M.show_remove_tags = function()
+    show(M.remove_tags)
 end
+
+M.show_add_options = function()
+end
+
+M.show_remove_options = function()
+end
+
 
 M.generate_actions = function(params)
     -- local struct = get_struct()
@@ -157,8 +231,8 @@ M.generate_actions = function(params)
     -- end
     --
     local actions = {
-        ["Add Tag"] = M.add_tags,
-        ["Del Tag"] = M.remove_tags,
+        ["Add Tag"] = M.show_add_tags,
+        ["Del Tag"] = M.show_remove_tags,
     }
 
     return actions
