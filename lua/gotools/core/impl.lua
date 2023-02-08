@@ -6,7 +6,7 @@ local conf = require 'telescope.config'.values
 local finders = require 'telescope.finders'
 local make_entry = require "telescope.make_entry"
 local pickers = require 'telescope.pickers'
-local ts_utils = require "gotools.utils.ts"
+local tsutil = require "gotools.ts"
 local channel = require("plenary.async.control").channel
 local tele_utils = require "telescope.utils"
 local options = require("gotools").options
@@ -42,9 +42,8 @@ local function run(cmd_args)
     job:start()
 end
 
-local function get_struct(position)
-    local pos = position or vim.api.nvim_win_get_cursor(0)
-    local ns = ts_utils.get_struct_node_at_pos(unpack(pos))
+local function get_struct()
+    local ns = tsutil.get_struct_node_at_cursor()
     if ns == nil or ns == {} then
         return nil
     end
@@ -199,11 +198,10 @@ M.impl_find = function(recv_type)
 end
 
 M.generate_actions = function(params)
-    local position = { params.row, params.col }
-    local struct = get_struct(position)
-    if struct == nil then
-        return {}
-    end
+    -- local struct = get_struct()
+    -- if struct == nil then
+    --     return {}
+    -- end
 
     local actions = {
         ["Impl Interface"] = action_factory("struct"),

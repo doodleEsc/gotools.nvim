@@ -1,14 +1,63 @@
-local nodes = require "gotools.utils.ts.nodes"
+local nodes = require "gotools.ts.nodes"
 local M = {
     querys = {
-        struct_block = [[((type_declaration (type_spec name:(type_identifier) @struct.name type: (struct_type)))@struct.declaration)]],
-        em_struct_block = [[(field_declaration name:(field_identifier)@struct.name type: (struct_type)) @struct.declaration]],
-        struct_field = [[(field_declaration name:(field_identifier)@field.name type:(type_identifier)@field.type)@field.declaration]],
-        package = [[(package_clause (package_identifier)@package.name)@package.clause]],
-        interface = [[((type_declaration (type_spec name:(type_identifier) @interface.name type:(interface_type)))@interface.declaration)]],
-        method_name = [[((method_declaration receiver: (parameter_list)@method.receiver name: (field_identifier)@method.name body:(block))@method.declaration)]],
-        func = [[((function_declaration name: (identifier)@function.name) @function.declaration)]],
-        module = [[(module_directive (module_path)@module.name)@module.clause]],
+        struct_block = [[
+            (type_declaration 
+                (type_spec
+                    name:(type_identifier) @struct.name
+                    type: (struct_type)
+                )
+            ) @struct.declaration
+        ]],
+
+        struct_field = [[
+            (field_declaration
+                name: (field_identifier) @field.name
+            ) @field.declaration
+        ]],
+
+        -- struct_field = [[
+        --     (field_declaration
+        --         name: (field_identifier) @field.name
+        --         type: (type_identifier) @field.type
+        --         type: (pointer_type) @field.type
+        --     ) @field.declaration
+        -- ]],
+
+        package = [[
+            (package_clause
+                (package_identifier) @package.name
+            ) @package.clause
+        ]],
+
+        interface = [[
+            (type_declaration
+                (type_spec
+                    name:(type_identifier) @interface.name
+                    type:(interface_type)
+                )
+            ) @interface.declaration
+        ]],
+
+        method_name = [[
+            (method_declaration
+                receiver: (parameter_list)@method.receiver
+                name: (field_identifier)@method.name
+                body: (block)
+            ) @method.declaration
+        ]],
+
+        func = [[
+            (function_declaration
+                name: (identifier) @function.name
+            ) @function.declaration
+        ]],
+
+        module = [[
+            (module_directive
+                (module_path) @module.name
+            ) @module.clause
+        ]],
     },
 }
 

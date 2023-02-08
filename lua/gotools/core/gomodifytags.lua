@@ -1,7 +1,7 @@
 local M = {}
 local Job = require "plenary.job"
-local ts_utils = require "gotools.utils.ts"
-local utils = require "gotools.utils"
+local tsutil = require "gotools.ts"
+local util = require "gotools.util"
 local options = require("gotools").options
 local gomodifytags = options.tools.gomodifytags.bin or "gomodifytags"
 local input_opts = options.input_opts
@@ -17,6 +17,7 @@ local function modify(...)
     for _, v in ipairs(arg) do
         table.insert(cmd_args, v)
     end
+    print(vim.inspect(cmd_args))
     Job:new({
         command = gomodifytags,
         args = cmd_args,
@@ -38,7 +39,7 @@ local function modify(...)
                 vim.notify("failed to set tags " .. vim.inspect(tagged), "error")
             end
             for i, v in ipairs(tagged.lines) do
-                tagged.lines[i] = utils.rtrim(v)
+                tagged.lines[i] = util.rtrim(v)
             end
             vim.schedule(function()
                 vim.api.nvim_buf_set_lines(
@@ -54,9 +55,9 @@ local function modify(...)
     }):start()
 end
 
-local function get_struct(position)
-    local pos = position or vim.api.nvim_win_get_cursor(0)
-    local ns = ts_utils.get_struct_node_at_pos(unpack(pos))
+local function get_struct()
+    -- local pos = position or vim.api.nvim_win_get_cursor(0)
+    local ns = tsutil.get_struct_node_at_cursor()
     if ns == nil or ns == {} then
         return nil
     end
@@ -64,9 +65,8 @@ local function get_struct(position)
     return ns.name
 end
 
-local function get_field(position)
-    local pos = position or vim.api.nvim_win_get_cursor(0)
-    local ns = ts_utils.get_field_node_at_pos(unpack(pos))
+local function get_field()
+    local ns = tsutil.get_struct_field_node_at_cursor()
     if ns == nil or ns == {} then
         return nil
     end
@@ -151,12 +151,11 @@ M.remove_tags = function()
 end
 
 M.generate_actions = function(params)
-    local position = { params.row, params.col }
-    local struct = get_struct(position)
-    if struct == nil then
-        return {}
-    end
-
+    -- local struct = get_struct()
+    -- if struct == nil then
+    --     return {}
+    -- end
+    --
     local actions = {
         ["Add Tag"] = M.add_tags,
         ["Del Tag"] = M.remove_tags,

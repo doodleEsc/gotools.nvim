@@ -1,9 +1,6 @@
--- Table driven tests based on its target source files' function and method signatures.
--- https://github.com/cweill/gotests
-
 local M = {}
-local ts_utils = require "gotools.utils.ts"
-local utils = require("gotools.utils")
+local tsutil = require "gotools.ts"
+local util = require("gotools.util")
 local Job = require("plenary.job")
 local options = require("gotools").options
 local gotests = options.tools.gotests.bin or "gotests"
@@ -38,8 +35,8 @@ local get_test_gofile = function(gofile)
         vim.notify("Invalid File Type", "error")
         return
     end
-    local sep = utils.sep()
-    local results = utils.split(gofile, sep)
+    local sep = util.sep()
+    local results = util.split(gofile, sep)
     local test_filename = results[#results]:gsub("%.", "_test.")
     return test_filename
 end
@@ -93,9 +90,8 @@ local show = function(spec)
     vim.ui.select(items, select_opts, on_choice)
 end
 
-local function get_func_method_name(position)
-    local pos = position or vim.api.nvim_win_get_cursor(0)
-    local ns = ts_utils.get_func_method_node_at_pos(unpack(pos))
+local function get_func_method_name()
+    local ns = tsutil.get_func_method_node_at_cursor()
     if ns == nil or ns.name == nil then
         return nil
     end
@@ -148,17 +144,18 @@ local generate = function(row, col)
     local spec = {
         ["Generate exported test"] = M.exported_test,
         ["Generate all test"] = M.all_test,
+        ["Generate func/method test"] = M.fun_test
     }
 
-    local generate_func_test = true
-    local name = get_func_method_name()
-    if name == nil then
-        generate_func_test = false
-    end
-
-    if generate_func_test then
-        spec["Generate func/method test"] = M.fun_test
-    end
+    -- local generate_func_test = true
+    -- local name = get_func_method_name()
+    -- if name == nil then
+    --     generate_func_test = false
+    -- end
+    --
+    -- if generate_func_test then
+    --     spec["Generate func/method test"] = M.fun_test
+    -- end
 
     show(spec)
 end
