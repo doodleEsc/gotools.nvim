@@ -160,7 +160,7 @@ M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype
             -- returns { { @type_decl.name, @type_decl.type, @type_decl.declaration} ... }
             local idx = string.find(path, '.[^.]*$') -- find last `.`
             op = string.sub(path, idx + 1, #path)
-            local a1, b1, c1, d1 = ts_utils.get_node_range(node)
+            -- local a1, b1, c1, d1 = ts_utils.get_node_range(node)
             local dbg_txt = get_node_text(node, bufnr) or ''
             if #dbg_txt > 100 then
                 dbg_txt = string.sub(dbg_txt, 1, 100) .. '...'
@@ -176,7 +176,8 @@ M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype
                 type_node = node
             elseif op == 'declaration' or op == 'clause' then
                 declaration_node = node
-                sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ ts_utils.get_node_range(node) }, bufnr)
+                -- sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ ts_utils.get_node_range(node) }, bufnr)
+                sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ vim.treesitter.get_node_range(node) }, bufnr)
             else
                 vim.notify('unknown op: ' .. op)
             end
@@ -201,7 +202,8 @@ M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype
             -- })
         end
         if type_node ~= nil and ntype then
-            sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ ts_utils.get_node_range(type_node) }, bufnr)
+            -- sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ ts_utils.get_node_range(type_node) }, bufnr)
+            sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ vim.treesitter.get_node_range(type_node) }, bufnr)
             table.insert(results, {
                 type_node = type_node,
                 dim = { s = { r = sRow, c = sCol }, e = { r = eRow, c = eCol } },
