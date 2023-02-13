@@ -30,7 +30,7 @@ local M = {
 
     query_method = '(method_declaration receiver: (parameter_list (parameter_declaration name:(identifier)@method.receiver.name type:(type_identifier)@method.receiver.type)) name:(field_identifier)@method.name)@method.declaration',
 
-    query_method_name = '((method_declaration receiver: (parameter_list)@method.receiver name: (field_identifier)@method.name body:(block))@method.declaration)',
+    query_method_name = '(method_declaration receiver: (parameter_list)@method.receiver name: (field_identifier)@method.name body:(block))@method.declaration',
 
     query_method_void = [[((method_declaration
      receiver: (parameter_list

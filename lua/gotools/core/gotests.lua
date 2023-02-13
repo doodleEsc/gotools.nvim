@@ -80,7 +80,16 @@ local show = function(spec)
     end
 
     local on_choice = function(choice)
-        local callback = spec[choice]
+        local selected
+        if type(choice) == "string" then
+            selected = choice
+        elseif type(choice) == "table" and choice["text"] ~= nil then
+            selected = choice["text"]
+        else
+            return
+        end
+
+        local callback = spec[selected]
         local ok, _ = pcall(callback)
         if not ok then
             vim.notify("Failed to run selected function", vim.log.levels.ERROR)
@@ -142,9 +151,9 @@ end
 
 local generate = function(row, col)
     local spec = {
-        ["Generate exported test"] = M.exported_test,
-        ["Generate all test"] = M.all_test,
-        ["Generate func/method test"] = M.fun_test
+        ["Exported"] = M.exported_test,
+        ["All"] = M.all_test,
+        ["Func/Method"] = M.fun_test
     }
 
     -- local generate_func_test = true
@@ -165,12 +174,11 @@ local spec_factory = function(params)
         local row, col = params.row, params.col
         generate(row, col)
     end
-
 end
 
 M.generate_actions = function(params)
     local actions = {
-        ["Generate test"] = spec_factory(params)
+        ["Generate Test"] = spec_factory(params)
     }
 
     return actions

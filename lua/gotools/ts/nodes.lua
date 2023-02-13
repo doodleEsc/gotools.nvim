@@ -178,8 +178,8 @@ M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype
                 declaration_node = node
                 -- sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ ts_utils.get_node_range(node) }, bufnr)
                 sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ vim.treesitter.get_node_range(node) }, bufnr)
-            else
-                vim.notify('unknown op: ' .. op)
+            -- else
+            --     vim.notify('unknown op: ' .. op)
             end
         end)
         if declaration_node ~= nil then
