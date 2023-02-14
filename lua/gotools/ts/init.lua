@@ -12,26 +12,19 @@ local M = {
     query_package = '(package_clause (package_identifier)@package.name)@package.clause',
     -- query_struct_id = '(type_spec name:(type_identifier) @definition.struct  (struct_type))',
     -- query_em_struct_id = '(field_declaration name:(field_identifier) @definition.struct (struct_type))',
-    -- query_struct_block = [[((type_declaration (type_spec name:(type_identifier) @struct.name type: (struct_type)))@struct.declaration)]],
+    -- query_struct_block = '(type_declaration (type_spec name:(type_identifier) @struct.name type: (struct_type)))@struct.declaration',
     query_struct_block = '(type_declaration (type_spec name:(type_identifier) @struct.name type: (struct_type)))@struct.declaration',
 
     query_em_struct_block = '(field_declaration name:(field_identifier)@field.name) @field.declaration',
-
     -- query_type_declaration = '(type_declaration (type_spec name:(type_identifier)@type_decl.name type:(type_identifier)@type_decl.type))@type_decl.declaration', -- rename to gotype so not confuse with type
     query_type_declaration = '(type_declaration (type_spec name:(type_identifier)@type_decl.name))@type_decl.declaration', -- rename to gotype so not confuse with type
-
     -- query_struct_block_from_id = [[(((type_spec name:(type_identifier) type: (struct_type)))@block.struct_from_id)]],
     -- query_em_struct = "(field_declaration name:(field_identifier) @definition.struct type: (struct_type))",
     query_interface_id = '(type_declaration (type_spec name:(type_identifier) @interface.name type:(interface_type)))@interface.declaration',
-
     query_interface_method = '(method_spec name: (field_identifier)@method.name)@interface.method.declaration',
-
     query_func = '(function_declaration name: (identifier)@function.name) @function.declaration',
-
     query_method = '(method_declaration receiver: (parameter_list (parameter_declaration name:(identifier)@method.receiver.name type:(type_identifier)@method.receiver.type)) name:(field_identifier)@method.name)@method.declaration',
-
     query_method_name = '(method_declaration receiver: (parameter_list)@method.receiver name: (field_identifier)@method.name body:(block))@method.declaration',
-
     query_method_void = [[((method_declaration
      receiver: (parameter_list
        (parameter_declaration
@@ -42,7 +35,6 @@ local M = {
      parameters: (parameter_list)@method.parameter
      body:(block)
   )@method.declaration)]],
-
     query_method_multi_ret = [[(method_declaration
      receiver: (parameter_list
        (parameter_declaration
@@ -54,7 +46,6 @@ local M = {
      result: (parameter_list)@method.result
      body:(block)
      )@method.declaration]],
-
     query_method_single_ret = [[((method_declaration
      receiver: (parameter_list
        (parameter_declaration
@@ -66,7 +57,6 @@ local M = {
      result: (type_identifier)@method.result
      body:(block)
      )@method.declaration)]],
-
     query_tr_method_void = [[((method_declaration
      receiver: (parameter_list
        (parameter_declaration
@@ -77,7 +67,6 @@ local M = {
      parameters: (parameter_list)@method.parameter
      body:(block)
   )@method.declaration)]],
-
     query_tr_method_multi_ret = [[((method_declaration
      receiver: (parameter_list
        (parameter_declaration
@@ -89,7 +78,6 @@ local M = {
      result: (parameter_list)@method.result
      body:(block)
      )@method.declaration)]],
-
     query_tr_method_single_ret = [[((method_declaration
      receiver: (parameter_list
        (parameter_declaration
@@ -101,7 +89,6 @@ local M = {
      result: (type_identifier)@method.result
      body:(block)
      )@method.declaration)]],
-
     query_test_func = [[((function_declaration name: (identifier) @test_name
         parameters: (parameter_list
             (parameter_declaration
@@ -114,18 +101,15 @@ local M = {
       (#contains? @test_name "Test")
       (#match? @_param_package "testing")
       (#match? @_param_name "T"))]],
-
     query_testcase_node = [[(literal_value (literal_element (literal_value .(keyed_element (literal_element (identifier)) (literal_element (interpreted_string_literal) @test.name)))))]],
-
     query_string_literal = [[((interpreted_string_literal) @string.value)]],
 }
 
 local function get_name_defaults()
-    return { ['func'] = 'function', ['if'] = 'if', ['else'] = 'else', ['for'] = 'for' }
+    return { ['func'] = 'function',['if'] = 'if',['else'] = 'else',['for'] = 'for' }
 end
 
 M.get_struct_node_at_cursor = function(bufnr)
-    -- local query = M.query_struct_block .. ' ' .. M.query_em_struct_block
     local query = M.query_struct_block
     local bufn = bufnr or vim.api.nvim_get_current_buf()
     local ns = nodes.nodes_at_cursor(query, get_name_defaults(), bufn)

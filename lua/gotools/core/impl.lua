@@ -41,8 +41,9 @@ local function run(cmd_args)
     job:start()
 end
 
-local function get_struct()
-    local ns = tsutil.get_struct_node_at_cursor()
+local function get_type()
+    -- local ns = tsutil.get_struct_node_at_cursor()
+    local ns = tsutil.get_type_node_at_cursor()
     if ns == nil or ns == {} then
         return nil
     end
@@ -83,7 +84,7 @@ local function get_interface_name(entry)
 end
 
 local function get_receiver(recv_type)
-    local struct = get_struct()
+    local struct = get_type()
     if struct == nil then
         return nil
     end
@@ -142,7 +143,7 @@ end
 M.impl_find = function(recv_type)
     local opts = options.tools.impl
     local curr_bufnr = vim.api.nvim_get_current_buf()
-    local struct = get_struct()
+    local struct = get_type()
     if struct == nil then
         vim.notify("No type identifier found under cursor", vim.log.levels.WARN)
         return
