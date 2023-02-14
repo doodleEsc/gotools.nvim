@@ -9,21 +9,20 @@ local M = {
     query_interface = '(type_declaration (type_spec name:(type_identifier) @interface.name type:(interface_type)))@interface.declaration',
     query_interface_method = '(method_spec name: (field_identifier)@method.name)@interface.method.declaration',
     query_func_name = '(function_declaration name: (identifier)@function.name) @function.declaration',
-
     query_struct_method = '(method_declaration receiver: (parameter_list (parameter_declaration name:(identifier)@method.receiver.name type:(type_identifier)@method.receiver.type)) name:(field_identifier)@method.name)@method.declaration',
     query_pointer_method = '(method_declaration receiver: (parameter_list (parameter_declaration name:(identifier)@method.receiver.name type:(pointer_type)@method.receiver.type)) name:(field_identifier)@method.name)@method.declaration',
-
-    query_method_name = '(method_declaration receiver: (parameter_list)@method.receiver name: (field_identifier)@method.name body:(block))@method.declaration',
-  --   query_method_void = [[((method_declaration
-  --    receiver: (parameter_list
-  --      (parameter_declaration
-  --        name: (identifier)@method.receiver.name
-  --        type: (pointer_type)@method.receiver.type)
-  --      )
-  --    name: (field_identifier)@method.name
-  --    parameters: (parameter_list)@method.parameter
-  --    body:(block)
-  -- )@method.declaration)]],
+    -- query_method_name = '(method_declaration receiver: (parameter_list)@method.receiver name: (field_identifier)@method.name body:(block))@method.declaration',
+    query_method_name = '(method_declaration receiver: (parameter_list)@method.receiver name: (field_identifier)@method.name)@method.declaration',
+    --   query_method_void = [[((method_declaration
+    --    receiver: (parameter_list
+    --      (parameter_declaration
+    --        name: (identifier)@method.receiver.name
+    --        type: (pointer_type)@method.receiver.type)
+    --      )
+    --    name: (field_identifier)@method.name
+    --    parameters: (parameter_list)@method.parameter
+    --    body:(block)
+    -- )@method.declaration)]],
     -- query_method_multi_ret = [[(method_declaration
     --  receiver: (parameter_list
     --    (parameter_declaration
@@ -46,16 +45,16 @@ local M = {
     --  result: (type_identifier)@method.result
     --  body:(block)
     --  )@method.declaration)]],
-  --   query_tr_method_void = [[((method_declaration
-  --    receiver: (parameter_list
-  --      (parameter_declaration
-  --        name: (identifier)@method.receiver.name
-  --        type: (type_identifier)@method.receiver.type)
-  --      )
-  --    name: (field_identifier)@method.name
-  --    parameters: (parameter_list)@method.parameter
-  --    body:(block)
-  -- )@method.declaration)]],
+    --   query_tr_method_void = [[((method_declaration
+    --    receiver: (parameter_list
+    --      (parameter_declaration
+    --        name: (identifier)@method.receiver.name
+    --        type: (type_identifier)@method.receiver.type)
+    --      )
+    --    name: (field_identifier)@method.name
+    --    parameters: (parameter_list)@method.parameter
+    --    body:(block)
+    -- )@method.declaration)]],
     -- query_tr_method_multi_ret = [[((method_declaration
     --  receiver: (parameter_list
     --    (parameter_declaration
@@ -90,7 +89,6 @@ local M = {
       (#contains? @test_name "Test")
       (#match? @_param_package "testing")
       (#match? @_param_name "T"))]],
-
     query_testcase_node = [[(literal_value (literal_element (literal_value .(keyed_element (literal_element (identifier)) (literal_element (interpreted_string_literal) @test.name)))))]],
     query_string_literal = [[((interpreted_string_literal) @string.value)]],
 }
