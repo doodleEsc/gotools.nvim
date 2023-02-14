@@ -42,7 +42,6 @@ local function run(cmd_args)
 end
 
 local function get_type()
-    -- local ns = tsutil.get_struct_node_at_cursor()
     local ns = tsutil.get_type_node_at_cursor()
     if ns == nil or ns == {} then
         return nil
