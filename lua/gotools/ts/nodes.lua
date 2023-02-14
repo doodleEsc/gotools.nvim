@@ -4,7 +4,6 @@ local parsers = require('nvim-treesitter.parsers')
 local locals = require('nvim-treesitter.locals')
 local utils = require('gotools.ts.util')
 local api = vim.api
-local fn = vim.fn
 local vim = vim
 local M = {}
 
@@ -64,8 +63,8 @@ end
 M.get_nodes = function(query, lang, defaults, bufnr)
     bufnr = bufnr or 0
     local success, parsed_query = pcall(function()
-        return vim.treesitter.parse_query(lang, query)
-    end)
+            return vim.treesitter.parse_query(lang, query)
+        end)
     if not success then
         vim.notify('treesitter parse failed, make sure treesitter installed and setup correctly', vim.log.levels.WARN)
         return nil
@@ -119,22 +118,13 @@ M.get_nodes = function(query, lang, defaults, bufnr)
 end
 
 
-local nodes = {}
-local nodestime = {}
-
-
 M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype)
     bufnr = bufnr or api.nvim_get_current_buf()
-    local key = tostring(bufnr) .. query
-    local filetime = fn.getftime(fn.expand('%'))
-    if nodes[key] ~= nil and nodestime[key] ~= nil and filetime == nodestime[key] then
-        return nodes[key]
-    end
     -- todo a huge number
     pos_row = pos_row or 30000
     local success, parsed_query = pcall(function()
-        return vim.treesitter.parse_query(lang, query)
-    end)
+            return vim.treesitter.parse_query(lang, query)
+        end)
     if not success then
         return nil
     end
@@ -154,13 +144,8 @@ M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype
         -- local method_receiver = ""
 
         locals.recurse_local_nodes(match, function(_, node, path)
-            -- local idx = string.find(path, ".", 1, true)
-            -- The query may return multiple nodes, e.g.
-            -- (type_declaration (type_spec name:(type_identifier)@type_decl.name type:(type_identifier)@type_decl.type))@type_decl.declaration
-            -- returns { { @type_decl.name, @type_decl.type, @type_decl.declaration} ... }
             local idx = string.find(path, '.[^.]*$') -- find last `.`
             op = string.sub(path, idx + 1, #path)
-            -- local a1, b1, c1, d1 = ts_utils.get_node_range(node)
             local dbg_txt = get_node_text(node, bufnr) or ''
             if #dbg_txt > 100 then
                 dbg_txt = string.sub(dbg_txt, 1, 100) .. '...'
@@ -176,15 +161,11 @@ M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype
                 type_node = node
             elseif op == 'declaration' or op == 'clause' then
                 declaration_node = node
-                -- sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ ts_utils.get_node_range(node) }, bufnr)
                 sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ vim.treesitter.get_node_range(node) }, bufnr)
-            -- else
-            --     vim.notify('unknown op: ' .. op)
             end
         end)
         if declaration_node ~= nil then
             if sRow <= pos_row then
-                -- vim.notify(tostring(sRow) .. ' beyond ' .. tostring(pos_row), vim.log.levels.ERROR)
                 table.insert(results, {
                     declaring_node = declaration_node,
                     dim = { s = { r = sRow, c = sCol }, e = { r = eRow, c = eCol } },
@@ -193,16 +174,8 @@ M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype
                     type = node_type or type,
                 })
             end
-            -- table.insert(results, {
-            --     declaring_node = declaration_node,
-            --     dim = { s = { r = sRow, c = sCol }, e = { r = eRow, c = eCol } },
-            --     name = name,
-            --     operator = op,
-            --     type = node_type or type,
-            -- })
         end
         if type_node ~= nil and ntype then
-            -- sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ ts_utils.get_node_range(type_node) }, bufnr)
             sRow, sCol, eRow, eCol = ts_utils.get_vim_range({ vim.treesitter.get_node_range(type_node) }, bufnr)
             table.insert(results, {
                 type_node = type_node,
@@ -213,8 +186,6 @@ M.get_all_nodes = function(query, lang, defaults, bufnr, pos_row, pos_col, ntype
             })
         end
     end
-    nodes[key] = results
-    nodestime[key] = filetime
     return results
 end
 
@@ -246,7 +217,8 @@ M.nodes_at_cursor = function(query, default, bufnr, ntype)
     end
     local nodes_at_cursor = M.sort_nodes(M.intersect_nodes(ns, row, col))
     if nodes_at_cursor == nil or #nodes_at_cursor == 0 then
-        vim.notify('Unable to find any nodes at pos. ' .. tostring(row) .. ':' .. tostring(col), vim.lsp.log_levels.DEBUG)
+        vim.notify('Unable to find any nodes at pos. ' .. tostring(row) .. ':' .. tostring(col), vim.lsp.log_levels
+        .DEBUG)
         return nil
     end
 
