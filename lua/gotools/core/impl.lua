@@ -131,8 +131,17 @@ local function action_factory()
             { "Struct", "Pointer" },
             select_opts,
             function(item)
+                local selected
+                if type(item) == "string" then
+                    selected = item
+                elseif type(item) == "table" and item["text"] ~= nil then
+                    selected = item["text"]
+                else
+                    return
+                end
+
                 local recv_type = "struct"
-                if item.text == "Pointer" then
+                if selected == "Pointer" then
                     recv_type = "pointer"
                 end
                 M.impl_find(recv_type)

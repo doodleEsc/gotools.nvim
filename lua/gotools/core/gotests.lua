@@ -155,17 +155,6 @@ local generate = function(row, col)
         ["All"] = M.all_test,
         ["Func/Method"] = M.fun_test
     }
-
-    -- local generate_func_test = true
-    -- local name = get_func_method_name()
-    -- if name == nil then
-    --     generate_func_test = false
-    -- end
-    --
-    -- if generate_func_test then
-    --     spec["Generate func/method test"] = M.fun_test
-    -- end
-
     show(spec)
 end
 
