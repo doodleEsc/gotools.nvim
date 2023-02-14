@@ -12,32 +12,31 @@ local tele_utils = require "telescope.utils"
 local options = require("gotools").options
 local impl = options.tools.impl.bin or "impl"
 local select_opts = options.select_opts
-local input_opts = options.input_opts
 
 
 local M = {}
 
 local function run(cmd_args)
     local job = Job:new({
-        command = impl,
-        args = cmd_args,
-        on_exit = function(data, retval)
-            if retval ~= 0 then
-                vim.notify(
-                    "command 'impl' exited with code " .. retval,
-                    vim.log.levels.ERROR
-                )
-                return
-            end
-            vim.schedule(function()
-                local content = data:result()
-                local lnum = vim.fn.line("$")
-                table.insert(content, 1, "")
-                vim.fn.append(lnum, content)
-                vim.api.nvim_win_set_cursor(0, { lnum + 1, 0 })
-            end)
-        end,
-    })
+            command = impl,
+            args = cmd_args,
+            on_exit = function(data, retval)
+                if retval ~= 0 then
+                    vim.notify(
+                        "command 'impl' exited with code " .. retval,
+                        vim.log.levels.ERROR
+                    )
+                    return
+                end
+                vim.schedule(function()
+                    local content = data:result()
+                    local lnum = vim.fn.line("$")
+                    table.insert(content, 1, "")
+                    vim.fn.append(lnum, content)
+                    vim.api.nvim_win_set_cursor(0, { lnum + 1, 0 })
+                end)
+            end,
+        })
 
     job:start()
 end
@@ -59,13 +58,13 @@ local function get_package(pkg_dir)
     local pkg = ""
 
     local job = Job:new({
-        command = "go",
-        args = args,
-        cwd = pkg_dir,
-        on_stdout = function(_, data)
-            pkg = data
-        end,
-    })
+            command = "go",
+            args = args,
+            cwd = pkg_dir,
+            on_stdout = function(_, data)
+                pkg = data
+            end,
+        })
     job:sync()
 
     return pkg
@@ -97,7 +96,8 @@ local function get_receiver(recv_type)
 end
 
 local function get_workspace_symbols_requester(bufnr, opts)
-    local cancel = function() end
+    local cancel = function()
+    end
     return function(prompt)
         local tx, rx = channel.oneshot()
         cancel()
@@ -124,33 +124,19 @@ local function goimpl(receiver, interface)
     run(cmd_args)
 end
 
-local function action_factory(recv_type)
+local function action_factory()
     return function()
         vim.ui.select(
-            { "Input Interface", "Find Interface" },
+            { "Struct", "Pointer" },
             select_opts,
             function(item)
-                if item == "Input Interface" then
-                    M.impl_input(recv_type)
-                else
-                    M.impl_find(recv_type)
+                local recv_type = "struct"
+                if item.text == "Pointer" then
+                    recv_type = "pointer"
                 end
+                M.impl_find(recv_type)
             end)
     end
-end
-
-M.impl_input = function(recv_type)
-    local opts = input_opts
-    opts.label = "Interface"
-    vim.ui.input(opts, function(input)
-
-        local recv = get_receiver(recv_type)
-        if recv == nil then
-            vim.notify("No Struct Founded at Cursor Position")
-            return
-        end
-        goimpl(recv, input)
-    end)
 end
 
 M.impl_find = function(recv_type)
@@ -198,14 +184,8 @@ M.impl_find = function(recv_type)
 end
 
 M.generate_actions = function(params)
-    -- local struct = get_struct()
-    -- if struct == nil then
-    --     return {}
-    -- end
-
     local actions = {
-        ["Impl Interface"] = action_factory("struct"),
-        ["Impl Interface In Pointer"] = action_factory("pointer"),
+        ["Impl Interface"] = action_factory(),
     }
 
     return actions
