@@ -10,33 +10,32 @@ local tsutil = require "gotools.ts"
 local channel = require("plenary.async.control").channel
 local tele_utils = require "telescope.utils"
 local options = require("gotools").options
-local impl = options.tools.impl.bin or "impl"
-local select_opts = options.select_opts
-
+local opts = options.impl
 
 local M = {}
 
 local function run(cmd_args)
+    print(vim.inspect(cmd_args))
     local job = Job:new({
-            command = impl,
-            args = cmd_args,
-            on_exit = function(data, retval)
-                if retval ~= 0 then
-                    vim.notify(
-                        "command 'impl' exited with code " .. retval,
-                        vim.log.levels.ERROR
-                    )
-                    return
-                end
-                vim.schedule(function()
-                    local content = data:result()
-                    local lnum = vim.fn.line("$")
-                    table.insert(content, 1, "")
-                    vim.fn.append(lnum, content)
-                    vim.api.nvim_win_set_cursor(0, { lnum + 1, 0 })
-                end)
-            end,
-        })
+        command = opts.bin,
+        args = cmd_args,
+        on_exit = function(data, retval)
+            if retval ~= 0 then
+                vim.notify(
+                    "command 'impl' exited with code " .. retval,
+                    vim.log.levels.ERROR
+                )
+                return
+            end
+            vim.schedule(function()
+                local content = data:result()
+                local lnum = vim.fn.line("$")
+                table.insert(content, 1, "")
+                vim.fn.append(lnum, content)
+                vim.api.nvim_win_set_cursor(0, { lnum + 1, 0 })
+            end)
+        end,
+    })
 
     job:start()
 end
@@ -58,13 +57,13 @@ local function get_package(pkg_dir)
     local pkg = ""
 
     local job = Job:new({
-            command = "go",
-            args = args,
-            cwd = pkg_dir,
-            on_stdout = function(_, data)
-                pkg = data
-            end,
-        })
+        command = "go",
+        args = args,
+        cwd = pkg_dir,
+        on_stdout = function(_, data)
+            pkg = data
+        end,
+    })
     job:sync()
 
     return pkg
@@ -128,7 +127,7 @@ local function action_factory()
     return function()
         vim.ui.select(
             { "Struct", "Pointer" },
-            select_opts,
+            opts.win_opts,
             function(item)
                 local selected
                 if type(item) == "string" then
@@ -149,7 +148,7 @@ local function action_factory()
 end
 
 M.impl_find = function(recv_type)
-    local opts = options.tools.impl
+    -- local opts = options.impl
     local curr_bufnr = vim.api.nvim_get_current_buf()
     local struct = get_type()
     if struct == nil then
@@ -194,7 +193,7 @@ end
 
 M.generate_actions = function(params)
     local actions = {
-        ["Impl Interface"] = action_factory(),
+            ["Impl Interface"] = action_factory(),
     }
 
     return actions

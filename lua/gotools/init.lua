@@ -1,27 +1,29 @@
 local M = {}
 
 local DEFAULT = {
-    tools = {
-        gotests = {
-            bin = "gotests",
-            test_template = nil,
-            test_template_dir = nil,
-        },
-        gomodifytags = {
-            bin = "gomodifytags",
-            skip_unexported = true
-        },
-        impl = {
-            bin = "impl",
+    gotests = {
+        bin = "gotests",
+        test_template = nil,
+        test_template_dir = nil,
+        win_opts = {
+            prompt = "Select An Action",
+            kind = 'gotools'
         }
     },
-    select_opts = {
-        prompt = 'Select An Action',
-        kind = 'gotools'
+    gomodifytags = {
+        bin = "gomodifytags",
+        skip_unexported = true,
+        win_opts = {
+            prompt = "Tag:",
+            kind = 'gotools'
+        }
     },
-    input_opts = {
-        prompt = '➤ ',
-        label = 'Input'
+    impl = {
+        bin = "impl",
+        win_opts = {
+            prompt = "Select An Action",
+            kind = 'gotools'
+        }
     }
 }
 

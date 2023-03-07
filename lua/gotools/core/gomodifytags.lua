@@ -3,9 +3,7 @@ local Job = require "plenary.job"
 local tsutil = require "gotools.ts"
 local util = require "gotools.util"
 local options = require("gotools").options
-local gomodifytags = options.tools.gomodifytags.bin or "gomodifytags"
-local input_opts = options.input_opts
-local skip_unexported = options.tools.gomodifytags.skip_unexported
+local opts = options.gomodifytags
 
 local function modify(...)
     local fpath = vim.fn.expand "%"
@@ -15,7 +13,7 @@ local function modify(...)
         "-w",
     }
 
-    if skip_unexported then
+    if opts.skip_unexported then
         table.insert(cmd_args, "-skip-unexported")
     end
     local arg = { ... }
@@ -23,7 +21,7 @@ local function modify(...)
         table.insert(cmd_args, v)
     end
     Job:new({
-        command = gomodifytags,
+        command = opts.bin,
         args = cmd_args,
         on_exit = function(data, retval)
             if retval ~= 0 then
@@ -79,9 +77,8 @@ local function get_field()
 end
 
 local show = function(on_confirm)
-    local opts = input_opts
-    opts.label = "Tag"
-    vim.ui.input(opts, on_confirm)
+    local win_opts = opts.win_opts
+    vim.ui.input(win_opts, on_confirm)
 end
 
 M.add_tags = function(...)
@@ -228,10 +225,10 @@ M.generate_actions = function(params)
     -- end
     --
     local actions = {
-        ["Add Tag"] = M.show_add_tags,
-        ["Remove Tag"] = M.show_remove_tags,
-        ["Add Option"] = M.show_add_options,
-        ["Remove Option"] = M.show_remove_options,
+            ["Add Tag"] = M.show_add_tags,
+            ["Remove Tag"] = M.show_remove_tags,
+            ["Add Option"] = M.show_add_options,
+            ["Remove Option"] = M.show_remove_options,
     }
 
     return actions

@@ -3,12 +3,11 @@ local tsutil = require "gotools.ts"
 local util = require("gotools.util")
 local Job = require("plenary.job")
 local options = require("gotools").options
-local gotests = options.tools.gotests.bin or "gotests"
-local select_opts = options.select_opts
+local opts = options.gotests
 
 local function run(args, extra)
     Job:new({
-        command = gotests,
+        command = opts.bin,
         args = args,
         on_exit = function(j, return_val)
             if return_val == 0 then
@@ -49,8 +48,8 @@ local new_gotests_extra = function()
 end
 
 local new_gotests_args = function(parallel)
-    local test_template = options.tools.gotests.test_template or ""
-    local test_template_dir = options.tools.gotests.test_template_dir or ""
+    local test_template = options.gotests.test_template or ""
+    local test_template_dir = options.gotests.test_template_dir or ""
     local args = {}
     if parallel then
         table.insert(args, "-parallel")
@@ -96,7 +95,7 @@ local show = function(spec)
         end
     end
 
-    vim.ui.select(items, select_opts, on_choice)
+    vim.ui.select(items, opts.win_opts, on_choice)
 end
 
 local function get_func_method_name()
